@@ -107,8 +107,8 @@ app.post('/api/games/search', async (req, res) => {
 });
 
 app.get('/api/games/populate', async (req, res) => {
-  await populateGames();
-  res.send({ success: true });
+  const result = await populateGames();
+  res.send({ success: result });
 });
 
 app.listen(PORT, () => {

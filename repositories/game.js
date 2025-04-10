@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const db = require('../models');
 
 module.exports = {
-  findAllGamesByPlatformAndLikeName: async (platform, name) =>
+  findAllGamesByPlatformAndLikeName: (platform, name) =>
     db.Game.findAll({
       where: {
         ...(platform !== '' ? { platform } : {}),
@@ -11,13 +11,13 @@ module.exports = {
       order: [['createdAt', 'DESC']],
     }),
 
-  findAllGames: async () => db.Game.findAll({ order: [['createdAt', 'DESC']] }),
+  findAllGames: () => db.Game.findAll({ order: [['createdAt', 'DESC']] }),
 
-  bulkCreateGames: async (games) =>
+  bulkCreateGames: (games) =>
     db.Game.bulkCreate(games, {
       ignoreDuplicates: true,
     }),
 
-  findGameByStoreId: async (storeIds) =>
+  findGameByStoreId: (storeIds) =>
     db.Game.findAll({ where: { storeId: { [Op.in]: storeIds } } }),
 };
