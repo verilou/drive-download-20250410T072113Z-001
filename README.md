@@ -70,7 +70,18 @@ Many other applications at Voodoo will use consume this API.
 We are planning to put this project in production. According to you, what are the missing pieces to make this project production ready?
 Please elaborate an action plan.
 
+Answer:
+Pour pouvoir déployer un environnement de production, l'idéal serait de dockeriser l'application pour pouvoir faciliter le déploiement en continu. Il faudra utiliser un autre type de base de données plus robuste comme PostgreSQL ou bien une autre en fonction du besoin. Un gestionnaire de secrets pour alimenter les variables d'environnement sera nécessaire. Des tests plus exhaustifs devront être mis en place. Un système d'authentification et de protection d'accès à l'API (JWT, clé API) sera requis. J'ajouterais sûrement un gestionnaire d'erreurs comme Sentry. En fonction du besoin, un VPS suffirait, ou bien une architecture orchestrée de load balancing avec Kubernetes.
+
+English translation:
+To deploy a production environment, the ideal approach would be to dockerize the application to facilitate continuous deployment. We would need to use a more robust database type such as PostgreSQL or another one depending on the requirements. A secrets manager would be necessary to handle environement variables. More comprehensive tests should be implemented. An authentication system and API access protection (JWT, API keys) would be required. I would also add an error management system like Sentry. Depending on the needs, a VPS might be sufficient, or we could opt for an orchestrated load balancing architecture with Kubernetes.
+
 #### Question 2:
 
 Let's pretend our data team is now delivering new files every day into the S3 bucket, and our service needs to ingest those files
 every day through the populate API. Could you describe a suitable solution to automate this? Feel free to propose architectural changes.
+
+Il faudrait créer un microservice dédié avec un cron job ou bien un système d'écoute d'événements pour déclencher la récupération des données. Le service implémenterait différentes fonctionnalités : du batch insert pour séquencer les insertions, gestion d'erreurs et de retry, logs, validation des données, et des backups éventuellement.
+
+English translation:
+We would need to create a dedicated microservice with a cron job or an event listening system to trigger data retrieval. The service would implement various features: batch insert to sequence insertions, error handling and retry mechanisms, logging, data validation, and potentially backups
