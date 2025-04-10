@@ -2,7 +2,7 @@ const fs = require('fs');
 const https = require('https');
 
 const StreamArray = require('stream-json/streamers/StreamArray');
-const { bulkCreateGames } = require('../repositories/game');
+const { bulkCreateGames, findGameByStoreId } = require('../repositories/game');
 const db = require('../models');
 
 const androidGamesS3Path =
@@ -28,18 +28,34 @@ module.exports = {
 const getStreamAndPopulate = async (path, platform) => {
   https.get(path, async (res) => {
     res.pipe(StreamArray.withParser()).on('data', async (data) => {
-      const games = data.value.map((game) => {
-        return {
-          publisherId: game.publisher_id,
-          name: game.name,
-          platform,
-          storeId: game.appId,
-          bundleId: game.bundle_id,
-          appVersion: game.version,
-          isPublished: new Date(game.release_date) <= new Date(),
-        };
-      });
-      await bulkCreateGames(games);
+      const games = data.value
+        .filter((game) => game.app_id !== undefined)
+        .map((game) => {
+          return {
+            publisherId: game.publisher_id,
+            name: game.name,
+            platform,
+            storeId: game.app_id ?? game.appId ?? game.bundle_id ?? game.id,
+            bundleId: game.bundle_id,
+            appVersion: game.version,
+            isPublished: new Date(game.release_date) <= new Date(),
+          };
+        });
+
+      const existingGames = await findGameByStoreId(
+        games.map((game) => game?.storeId),
+      );
+
+      const gamesToInsert = games.filter(
+        (game) =>
+          !existingGames.some((existingGame) => {
+            return (
+              game?.storeId && existingGame.storeId === game.storeId.toString()
+            );
+          }),
+      );
+
+      await bulkCreateGames(gamesToInsert);
     });
   });
 };

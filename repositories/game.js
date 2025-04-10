@@ -17,4 +17,7 @@ module.exports = {
     db.Game.bulkCreate(games, {
       ignoreDuplicates: true,
     }),
+
+  findGameByStoreId: async (storeIds) =>
+    db.Game.findAll({ where: { storeId: { [Op.in]: storeIds } } }),
 };
