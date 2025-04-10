@@ -1,6 +1,7 @@
 const request = require('supertest');
 var assert = require('assert');
 const app = require('../index');
+const db = require('../models');
 
 const data = {
   publisherId: '1234567890',
@@ -65,10 +66,6 @@ describe('GET /api/games', function () {
  * Testing search game endpoint
  */
 describe('POST /api/games/search', function () {
-  request(app)
-    .post('/api/games')
-    .send({ ...data, name: 'Test App2' });
-
   it('should respond with 200 and a list of all games', function (done) {
     request(app)
       .post('/api/games/search')
@@ -87,17 +84,22 @@ describe('POST /api/games/search', function () {
 
   it('should respond with 200 and a list of 1 game filtered by name', function (done) {
     request(app)
-      .post('/api/games/search')
-      .send({ name: 'Test App2', platform: 'ios' })
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, result) => {
-        if (err) return done(err);
-        assert.strictEqual(result.body.length, 1);
-        assert.strictEqual(result.body[0].name, 'Test App2');
-        done();
-      });
+      .post('/api/games')
+      .send({ ...data, name: 'Test App2' })
+      .then(() =>
+        request(app)
+          .post('/api/games/search')
+          .send({ name: 'Test App2', platform: 'ios' })
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, result) => {
+            if (err) return done(err);
+            assert.strictEqual(result.body.length, 1);
+            assert.strictEqual(result.body[0].name, 'Test App2');
+            done();
+          }),
+      );
   });
 });
 
@@ -143,6 +145,14 @@ describe('DELETE /api/games/1', function () {
   it('respond with 200', function (done) {
     request(app)
       .delete('/api/games/1')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err) => {
+        if (err) return done(err);
+      });
+    request(app)
+      .delete('/api/games/2')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
