@@ -3,7 +3,6 @@ const https = require('https');
 
 const StreamArray = require('stream-json/streamers/StreamArray');
 const { bulkCreateGames, findGameByStoreId } = require('../repositories/game');
-const db = require('../models');
 
 const androidGamesS3Path =
   'https://interview-marketing-eng-dev.s3.eu-west-1.amazonaws.com/android.top100.json';
