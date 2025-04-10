@@ -85,7 +85,21 @@ app.put('/api/games/:id', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
+app.post('/api/games/search', async (req, res) => {
+  const { name, platform } = req.body;
+
+  const { success, error } = searchGameValidator.safeParse({ name, platform });
+  if (!success) {
+    return res.status(400).send({ error: error.errors });
+  }
+
+  try {
+    const response = await searchGames(platform, name);
+    res.send(response);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
   console.log('Server is up on port 3000');
 });
 
