@@ -29,7 +29,6 @@ const getStreamAndPopulate = async (path, platform) => {
   https.get(path, async (res) => {
     res.pipe(StreamArray.withParser()).on('data', async (data) => {
       const games = data.value.map((game) => {
-        console.log('***Game', game);
         return {
           publisherId: game.publisher_id,
           name: game.name,
