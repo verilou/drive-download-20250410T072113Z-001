@@ -12,4 +12,9 @@ module.exports = {
     }),
 
   findAllGames: async () => db.Game.findAll({ order: [['createdAt', 'DESC']] }),
+
+  bulkCreateGames: async (games) =>
+    db.Game.bulkCreate(games, {
+      ignoreDuplicates: true,
+    }),
 };

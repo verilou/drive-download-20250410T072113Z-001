@@ -1,6 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./models');
+const { searchGames } = require('./services/search');
+const { searchGameValidator } = require('./validator/searchGameValidator');
+const { populateGames } = require('./services/populate');
+
+const PORT = process.env.NODE_ENV === 'test' ? 3001 : 3000;
 
 const app = express();
 
@@ -100,6 +105,13 @@ app.post('/api/games/search', async (req, res) => {
     res.status(400).send(err);
   }
 });
+
+app.get('/api/games/populate', async (req, res) => {
+  await populateGames();
+  res.send({ success: true });
+});
+
+app.listen(PORT, () => {
   console.log('Server is up on port 3000');
 });
 
